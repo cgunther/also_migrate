@@ -1,6 +1,6 @@
 module AlsoMigrate
   module Migration
-    
+
     def self.included(base)
       unless base.respond_to?(:method_missing_with_also_migrate)
         base.class_eval do
@@ -24,7 +24,7 @@ module AlsoMigrate
           :drop_table, :remove_column, :remove_columns,
           :remove_timestamps, :rename_column, :rename_table
         ]
-        
+
         # Rails reversible migrations are implemented by substituing a CommandRecorder
         # object in place of the actual database connection. To ensure compatibility with
         # the reversible migrations, we skip performing any actions during the 'up' part of the
@@ -33,14 +33,14 @@ module AlsoMigrate
         # we will then allow the method_missing hooks to fire and generate corresponding changes for the
         # 'down' part of the migration.
         return if @connection.is_a?(ActiveRecord::Migration::CommandRecorder)
-        
+
         if !args.empty? && supported.include?(method)
-          table_name = ActiveRecord::Migrator.proper_table_name(args[0])
-          
+          table_name = ActiveRecord::Migration.new.proper_table_name(args[0])
+
           # Find models
           (::AlsoMigrate.configuration || []).each do |config|
             next unless config[:source].to_s == table_name
-        
+
             # Don't change ignored columns
             [ config[:ignore] ].flatten.compact.each do |column|
               next if args.include?(column) || args.include?(column.intern)
@@ -65,7 +65,7 @@ module AlsoMigrate
             end
           end
         end
-        
+
         return return_value
       end
     end
