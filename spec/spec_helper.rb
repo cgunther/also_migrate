@@ -83,12 +83,12 @@ end
 
 def reset_fixture
   AlsoMigrate.configuration = []
-  
-  if connection.table_exists?('article_archives')
+
+  if connection.data_source_exists?('article_archives')
     connection.execute('DROP TABLE article_archives')
   end
-  
-  if connection.table_exists?('comment_archives')
+
+  if connection.data_source_exists?('comment_archives')
     connection.execute('DROP TABLE comment_archives')
   end
 end

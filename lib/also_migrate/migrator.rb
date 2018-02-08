@@ -1,6 +1,6 @@
 module AlsoMigrate
   module Migrator
-    
+
     def self.included(base)
       unless base.included_modules.include?(InstanceMethods)
         base.send :include, InstanceMethods
@@ -10,9 +10,9 @@ module AlsoMigrate
         end
       end
     end
-    
+
     module InstanceMethods
-      
+
       def migrate_with_also_migrate
         (::AlsoMigrate.configuration || []).each do |config|
           AlsoMigrate.create_tables(config)
@@ -23,17 +23,17 @@ module AlsoMigrate
       ensure
         migrate_without_also_migrate
       end
-      
+
       module AlsoMigrate
         class <<self
-        
+
           def connection
             ActiveRecord::Base.connection
           end
-        
+
           def create_tables(config)
             [ config[:destination] ].flatten.compact.each do |new_table|
-              if !connection.table_exists?(new_table) && connection.table_exists?(config[:source])
+              if !connection.data_source_exists?(new_table) && connection.data_source_exists?(config[:source])
                 columns = connection.columns(config[:source]).collect(&:name)
                 columns -= [ config[:subtract] ].flatten.compact.collect(&:to_s)
                 columns.collect! { |col| connection.quote_column_name(col) }
@@ -71,7 +71,7 @@ module AlsoMigrate
                   end
                 end
               end
-              if connection.table_exists?(new_table)
+              if connection.data_source_exists?(new_table)
                 if config[:add] || config[:subtract]
                   columns = connection.columns(new_table).collect(&:name)
                 end
