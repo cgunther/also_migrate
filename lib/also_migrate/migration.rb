@@ -20,7 +20,7 @@ module AlsoMigrate
 
         supported = [
           :add_column, :add_index, :add_timestamps, :change_column,
-          :change_column_default, :change_table, :create_table,
+          :change_column_default, :change_column_null, :change_table, :create_table,
           :drop_table, :remove_column, :remove_columns,
           :remove_timestamps, :rename_column, :rename_table
         ]
